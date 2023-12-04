@@ -107,7 +107,6 @@ namespace MyConsole
                     {
                         Console.WriteLine($"{dr[0].ToString()} {dr["NAME"].ToString()}");
                     }
-
                 }
                 db.Close();
             }
