@@ -123,7 +123,8 @@ namespace MyConsole
                     cmd.Parameters.AddWithValue("id", id);
                     cmd.Parameters.Add("name", SqlDbType.NVarChar, 1000).Direction = ParameterDirection.Output;
                     cmd.ExecuteNonQuery();
-                    Console.WriteLine(cmd.Parameters["name"].Value.ToString());
+                    if(cmd.Parameters["name"].Value != null)
+                        Console.WriteLine(cmd.Parameters["name"].Value.ToString());
                 }
                 db.Close();
             }
