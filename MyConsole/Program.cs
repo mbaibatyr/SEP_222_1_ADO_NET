@@ -111,13 +111,53 @@ namespace MyConsole
                 db.Close();
             }
         }
+
+        static void pGetCityNameById(int id)
+        {
+            using (SqlConnection db = new SqlConnection(conStr_2))
+            {
+                db.Open();
+                using (SqlCommand cmd = new SqlCommand("pGetCityNameById", db))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("id", id);
+                    cmd.Parameters.Add("name", SqlDbType.NVarChar, 1000).Direction = ParameterDirection.Output;
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine(cmd.Parameters["name"].Value.ToString());
+                }
+                db.Close();
+            }
+        }
         static void Main(string[] args)
         {
             //TestConnection();
             //getDate();
             //getCity();
             //getCity2();
-            pGetCityByName("");
+            //pGetCityByName("");
+            pGetCityNameById(2);
         }
     }
 }
+
+/*
+ create proc pGetCityNameById -- 1
+@id int,
+@name nvarchar(1000) out
+as
+SELECT		
+		@name = [name]
+FROM  [testDB].[dbo].[City]
+where id = @id
+
+-------------------------
+create proc [dbo].[pGetCityByName] --null
+@name nvarchar(1000)
+as
+SELECT
+		[id],
+		[name]
+FROM  [testDB].[dbo].[City]
+where (@name is null or @name = '' or [name] = @name)
+ 
+ */
