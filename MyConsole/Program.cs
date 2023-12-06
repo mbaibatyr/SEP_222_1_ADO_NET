@@ -9,6 +9,9 @@ namespace MyConsole
     {
         static string conStr_1 = "Server=207-P;Database=testDB;Trusted_Connection=True;";
         static string conStr_2 = "Server=207-P;Database=testDB;User Id=user1;Password=1234;";
+        static string conStr_3 = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\байбатыровм.STEP\Documents\testDB.mdf;Integrated Security=True;Connect Timeout=30";
+        static SqlConnection db2 = null;
+
 
         static void TestConnection()
         {
@@ -98,7 +101,7 @@ namespace MyConsole
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("name", name);
                     var dr = cmd.ExecuteReader();
-                    if(!dr.HasRows)
+                    if (!dr.HasRows)
                     {
                         Console.WriteLine("NO DATA");
                         return;
@@ -123,20 +126,60 @@ namespace MyConsole
                     cmd.Parameters.AddWithValue("id", id);
                     cmd.Parameters.Add("name", SqlDbType.NVarChar, 1000).Direction = ParameterDirection.Output;
                     cmd.ExecuteNonQuery();
-                    if(cmd.Parameters["name"].Value != null)
+                    if (cmd.Parameters["name"].Value != null)
                         Console.WriteLine(cmd.Parameters["name"].Value.ToString());
                 }
                 db.Close();
             }
         }
+
+        static void pStudentReturnCntSymbolsInLastNameById(int id)
+        {
+            using (SqlCommand cmd = new SqlCommand("pStudentReturnCntSymbolsInLastNameById", db2))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("id", id);
+                cmd.Parameters.Add("count", SqlDbType.NVarChar, 1000).Direction = 
+                    ParameterDirection.ReturnValue;
+                cmd.ExecuteNonQuery();
+                if (cmd.Parameters["count"].Value != null)
+                    Console.WriteLine(cmd.Parameters["count"].Value.ToString());
+            }
+
+
+        }
+        
+        static void pGetStudentsAndFaculty()
+        {
+            using (SqlCommand cmd = new SqlCommand("pGetStudentsAndFaculty", db2))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                var dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    Console.WriteLine(dr[1].ToString());
+                }
+                dr.NextResult();
+                while (dr.Read())
+                {
+                    Console.WriteLine(dr[1].ToString());
+                }
+            }
+        }
         static void Main(string[] args)
         {
+            db2 = new SqlConnection(conStr_3);
+            db2.Open();
+            //pStudentReturnCntSymbolsInLastNameById(2);
+            pGetStudentsAndFaculty();
+
+            db2.Close();
             //TestConnection();
             //getDate();
             //getCity();
             //getCity2();
             //pGetCityByName("");
-            pGetCityNameById(2);
+            //pGetCityNameById(2);
         }
     }
 }
